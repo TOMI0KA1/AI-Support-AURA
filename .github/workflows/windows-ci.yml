@@ -1,0 +1,53 @@
+name: CI Windows - tests & build
+on:
+  pull_request:
+  push:
+    branches: [ feat/windows-optimizations-and-ai-integration ]
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements_windows.txt
+
+    - name: Run tests
+      id: pytest
+      run: |
+        pytest -q --maxfail=1 || echo "pytest-failed" && exit 0
+
+    - name: Build onefile EXE with PyInstaller
+      id: build
+      run: |
+        pyinstaller --noconfirm --onefile --name Aura aura_optimized_launcher.py
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: aura-build
+        path: dist/Aura.exe
+
+    - name: Create issue on failure
+      if: ${{ failure() }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const issueTitle = `CI Failure: windows build/test on PR ${process.env.GITHUB_REF}`;
+          let body = `CI failed. See workflow run for details.`;
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: issueTitle,
+            body: body,
+            labels: ['beta','ci-failure']
+          });

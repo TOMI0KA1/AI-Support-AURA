@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# PyInstaller
+#  Usually these files are written by a python script run, they are not part of the source code
+build/
+dist/
+*.spec
+
+# Local configuration and logs
+.env
+*.log
+
+# Application data
+data/learning/
+data/custom_commands.json
+assets/avatars/
+*.pt
+*.onnx
+
+# Python Virtual Environment
+venv/
+.venv/
+env/
+ENV/
