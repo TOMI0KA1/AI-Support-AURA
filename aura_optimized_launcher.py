@@ -19,6 +19,7 @@ try:
     from src.ml.adaptive_learning import AdaptiveLearningSystem
     from src.ui.avatars import AvatarManager, AvatarState
     from src.core.custom_commands import CustomCommandsManager
+    from src.ui.gui_main import AuraGUI
 except Exception:
     logger.exception('Failed to import internal modules')
     raise
@@ -163,10 +164,14 @@ def main():
         
     app = AuraApp(memory_limit_mb=1200)
     app.start()
+
+    # Start GUI if not in headless mode
+    gui = AuraGUI(app)
     try:
-        while True:
-            time.sleep(1)
+        gui.run()
     except KeyboardInterrupt:
+        pass
+    finally:
         app.shutdown()
 
 if __name__ == '__main__':

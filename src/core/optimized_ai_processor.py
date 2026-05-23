@@ -110,7 +110,14 @@ class OptimizedAI:
         self.max_history_items_in_memory = 12
         self.summary_threshold = 300
         self.adapter = AIAdapter(provider='gemini')
-        logger.info("OptimizedAI initialized")
+        self.system_prompt = (
+            "You are Aura, a sophisticated, highly capable, and extremely polite AI assistant, "
+            "modeled after JARVIS from Iron Man. You assist the user with their computer tasks, "
+            "provide information, and manage system controls. Always address the user as 'Sir' or 'Sirs'. "
+            "Your tone should be professional, witty, and helpful. "
+            "When asked to open something or perform a system task, confirm it concisely and politely."
+        )
+        logger.info("OptimizedAI initialized with Jarvis-like personality")
 
     def _init_history_db(self):
         self.conn_hist = sqlite3.connect(str(self.chat_history_db), check_same_thread=False)
@@ -185,7 +192,7 @@ class OptimizedAI:
     def process_command(self, command: str, use_cache: bool = True) -> str:
         recent = self.load_recent_history(limit=self.max_history_items_in_memory)
         context = "\n".join(f"{m['role']}: {m['content']}" for m in recent)
-        prompt = f"{context}\nUser: {command}"
+        prompt = f"System: {self.system_prompt}\n{context}\nUser: {command}"
         key = self._hash_query(prompt)
 
         cached = self.mem_cache.get(key)
