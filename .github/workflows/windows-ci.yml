@@ -23,7 +23,8 @@ jobs:
     - name: Run tests
       id: pytest
       run: |
-        pytest -q --maxfail=1 || echo "pytest-failed" && exit 0
+        $env:PYTHONPATH = "."
+        pytest -q --maxfail=1
 
     - name: Build onefile EXE with PyInstaller
       id: build
